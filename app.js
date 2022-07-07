@@ -7,10 +7,10 @@ const io = require("socket.io")(http);
 //central state of voxel-painter
 
 
-app.use(express.static('../public/'));
+app.use(express.static('./public/'));
 
 app.get('/', function(req, res) {
-    res.sendFile('index.html', { root: '../public' });
+    res.sendFile('index.html', { root: './public' });
 });
 
 io.sockets.on('connection', newConnection);
