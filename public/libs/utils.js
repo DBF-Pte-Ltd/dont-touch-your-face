@@ -115,6 +115,22 @@ function SUM(list) {
 }
 
 function AVERAGE(list) {
-  const total = SUM(list)
-  return total/list.length
+  const total = SUM(list);
+  return total / list.length;
+}
+
+function randomIndex(length) {
+  return Math.round(Math.random() * (length - 1));
+}
+
+function selectRandom(collection) {
+  const index = randomIndex(collection.length);
+  return collection[index];
+}
+
+function checkDomain(i, j, k, DIM) {
+  if (i < 0 || i > DIM - 1) return false;
+  if (j < 0 || j > DIM - 1) return false;
+  if (k < 0 || k > DIM - 1) return false;
+  return true;
 }

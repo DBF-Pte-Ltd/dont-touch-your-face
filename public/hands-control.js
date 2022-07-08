@@ -22,17 +22,24 @@ let handMeshes = {}; // these are threejs objects that makes up the rendering of
 
 let handCollection = new THREE.Object3D();
 
+const cameraOffset = new Vector3(0, 1000.0, 1000.0); // NOTE Constant offset between the camera and the target
+
+let handsImage = new Image();
+handsImage.src = "assets/images/hands.png";
+
 // html canvas for drawing debug view
-var dbg = document.createElement("canvas").getContext("2d");
+let dbg = document.createElement("canvas").getContext("2d");
 dbg.canvas.style.position = "absolute";
 dbg.canvas.style.left = "0px";
 dbg.canvas.style.top = "0px";
 dbg.canvas.style.zIndex = 100; // "bring to front"
-dbg.canvas.id = 'dbg-canvas'
+dbg.canvas.id = "dbg-canvas";
+
+// dbg.drawImage(handsImage, 100, 100);
+
 document.body.appendChild(dbg.canvas);
 
-if(enableHandTracking) {
-
+if (enableHandTracking) {
 }
 
 const videoConstraints = {
@@ -42,8 +49,7 @@ const videoConstraints = {
 
 // read video from webcam
 
-if(enableHandTracking) {
-  
+if (enableHandTracking) {
   var capture = document.createElement("video");
   capture.playsinline = "playsinline";
   capture.autoplay = "autoplay";
@@ -53,12 +59,12 @@ if(enableHandTracking) {
       window.stream = stream;
       capture.srcObject = stream;
     });
-  
+
   // hide the video element
   capture.style.position = "absolute";
   capture.style.opacity = 0;
   capture.style.zIndex = -100; // "send to back"
-  
+
   // signal when capture is ready and set size for debug canvas
   capture.onloadeddata = function () {
     console.log("video initialized");
@@ -66,7 +72,7 @@ if(enableHandTracking) {
     dbg.canvas.width = capture.videoWidth; // half size
     dbg.canvas.height = capture.videoHeight;
     dbg.canvas.style.transform = "scale(-1, 1)";
-  
+
     game.camera.position.z = capture.videoWidth / 2; // rough estimate for suitable camera distance based on FOV
   };
 }
@@ -87,7 +93,7 @@ function updateMeshesFromServerData(remoteData, game) {
     if (!handMeshes[data.id] && data.hands.length) {
       handMeshes[data.id] = new THREE.Object3D();
 
-      console.log(data.hands);
+      if(data.id === game.player.id) handMeshes[data.id].localPlayer = true
 
       for (var i = 0; i < 21; i++) {
         // 21 keypoints
@@ -135,6 +141,7 @@ function updateMeshesFromServerData(remoteData, game) {
   for (var id in handMeshes) {
     handCollection.rotation.x = 0;
     handCollection.rotation.z = 0;
+    handCollection.position.set(0,0,0)
     // handCollection.rotation.z = 0
     const data = remoteData.find((d) => d.id === id);
     if (!data || !data.hands.length) {
@@ -172,11 +179,23 @@ function updateMeshesFromServerData(remoteData, game) {
 
     handCollection.rotation.x = Math.PI / 2;
     handCollection.rotation.z = Math.PI;
-    averageHandPosition.multiplyScalar(1 / 21);
-    averageHandPosition.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
-    averageHandPosition.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
-    // console.log('averageHandPosition is:: ', id, averageHandPosition)
-    game.handMovementCallback(averageHandPosition);
+    if(id === game.player.id) {
+
+      averageHandPosition.multiplyScalar(1 / 21);
+      averageHandPosition.applyAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+      averageHandPosition.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
+      handCollection.position.set(averageHandPosition.x*1.25, 0, averageHandPosition.z*1.25)
+      averageHandPosition.x *=2.25
+      averageHandPosition.z *=2.25
+      game.handMovementCallback(averageHandPosition);
+
+      // game.camera.position.copy(averageHandPosition).add(cameraOffset)
+      game.camera.position.lerp(averageHandPosition.clone().add(cameraOffset), 0.01)
+
+      const lookAt = new THREE.Vector3( 0, 0, -1 );
+      lookAt.applyQuaternion( game.camera.quaternion )
+      game.camera.lookAt(lookAt.lerp(averageHandPosition, 0.01))
+    }
   }
 }
 
