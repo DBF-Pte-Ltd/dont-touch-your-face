@@ -458,6 +458,7 @@ function checkDomain(i, j, k, DIM) {
 }
 
 function getCoordinates(state, object) {
+    if(!object) return;
     let { blockSize, DIM, blocks } = state;
     // console.log('getCoordinates:: ', object)
     let { position } = object;
