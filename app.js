@@ -153,13 +153,13 @@ function newConnection(socket) {
     let {grid2D} = state 
     state.grid2D = wfcRun(grid2D, DIM, 10) 
 
-    console.log('updateTileset!')
+    // console.log('updateTileset!')
     socket.emit("updateTileset", grid2D); // send state
 
     
 
     function initPlayer(data) {
-        console.log(`socket.init ${data.avatar}`);
+        // console.log(`socket.init ${data.avatar}`);
         for (let prop in data) {
             socket["userData"][prop] = data[prop];
         }
@@ -209,7 +209,7 @@ function updateTexture(state, block) {
 
     let neighbours = check3DNeighbours(state, i, j, k)
 
-    console.log('neighbours:::', neighbours)
+    // console.log('neighbours:::', neighbours)
 
 
     let categories = []
@@ -251,7 +251,7 @@ function updateTexture(state, block) {
 
         if (categories.length > 0) {
 
-            console.log('match!')
+            // console.log('match!')
             if (Math.random() > 0.1) category = categories[Math.floor(Math.random() * categories.length)];
             if (Math.random() > 0.1) variation = variations[Math.floor(Math.random() * variations.length)];
 
@@ -266,7 +266,7 @@ function updateTexture(state, block) {
 
     })
 
-    console.log(category, variation, needsTexture.length)
+    // console.log(category, variation, needsTexture.length)
 
 
 
@@ -305,7 +305,7 @@ function updateShape(state, block) {
     if (!neighbours) {
 
         // 2. make block into a spire,
-        console.log('spire:', block.uuid)
+        // console.log('spire:', block.uuid)
         block.shape = "cylinder";
         changes.push(block);
 
@@ -459,7 +459,7 @@ function checkDomain(i, j, k, DIM) {
 
 function getCoordinates(state, object) {
     let { blockSize, DIM, blocks } = state;
-    console.log('getCoordinates:: ', object)
+    // console.log('getCoordinates:: ', object)
     let { position } = object;
     let { x, y, z } = position;
     let i = (x + (DIM * blockSize) / 2) / blockSize - 0.5;
@@ -496,7 +496,7 @@ setInterval(function() {
 
 
 
-console.log('wfc')
+// console.log('wfc')
 
 
 
@@ -554,7 +554,7 @@ function wfcRun({ rules, tiles, grid }, DIM, steps) {
         // console.log(i)
     }
 
-    console.log('done!', grid)
+    // console.log('done!', grid)
 
     return {rules,tiles,grid}
 }
@@ -707,7 +707,7 @@ function wfc({ grid, gridCopy, DIM, tiles }) {
                 // Look right
                 if (i < DIM - 1) {
                     let right = grid[i + 1 + j * DIM];
-                    if (right == undefined) console.log("right undefined");
+                    // if (right == undefined) console.log("right undefined");
                     let validOptions = [];
                     for (let option of right.options) {
                         let valid = tiles[option].left;
@@ -722,8 +722,8 @@ function wfc({ grid, gridCopy, DIM, tiles }) {
                     for (let option of down.options) {
                         // console.log(tiles[option])
                         if (tiles[option] == undefined) {
-                            console.log(down);
-                            console.log(option);
+                            // console.log(down);
+                            // console.log(option);
                         }
                         let valid = tiles[option].up; // getting erros here
                         validOptions = validOptions.concat(valid);
