@@ -128,7 +128,7 @@ let state = StartOver(DIM);
 
 function newConnection(socket) {
     
-    // state = StartOver(DIM);
+    state = StartOver(DIM);
 
     console.log('....')
 
