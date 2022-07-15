@@ -169,7 +169,9 @@ function newConnection(socket) {
   function removeBlock(block) {
     if (!block) return;
     let { grid, DIM } = state;
-    let { i, j, k } = getCoordinates(state, state["blocks"][block.uuid]);
+    let result = getCoordinates(state, state["blocks"][block.uuid]);
+    if (!result) return;
+    let { i, j, k } = result;
     if (checkDomain(i, j, k, DIM)) grid[i][j][k] = false;
 
     wfcModifiers.push(block); // event loop wfc
